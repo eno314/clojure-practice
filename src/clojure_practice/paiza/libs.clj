@@ -13,3 +13,5 @@
 (defn split-line-by-comma [line]
   (string/split line #","))
 
+(defn readlines-splitted-by-space [line-lenght]
+  (map split-line-by-space (readlines line-lenght)))

@@ -1,7 +1,7 @@
 (ns clojure-practice.paiza.libs-test
   (:require [clojure-practice.paiza.libs :refer [read-int-value-line readlines
-                                                 split-line-by-comma
-                                                 split-line-by-space]]
+                                                 readlines-splitted-by-space
+                                                 split-line-by-comma split-line-by-space]]
             [clojure.test :refer [deftest is testing]]))
 
 (deftest test-readlines
@@ -26,3 +26,9 @@
   (is (= (split-line-by-comma "Hello, world!") ["Hello" " world!"]))
   (is (= (split-line-by-comma "1,2,3,4,5") ["1" "2" "3" "4" "5"]))
   (is (= (split-line-by-comma "abcde") ["abcde"])))
+
+(deftest test-readlines-splitted-by-space
+  (with-in-str "1 2 3 4 5\n"
+    (is (= (readlines-splitted-by-space 1) [["1" "2" "3" "4" "5"]])))
+  (with-in-str "1 2\na bb ccc ddd\n"
+    (is (= (readlines-splitted-by-space 2) [["1" "2"] ["a" "bb" "ccc" "ddd"]]))))
