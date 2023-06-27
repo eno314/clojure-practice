@@ -15,11 +15,11 @@
 
 (deftest read-input-borad-test
   (testing "sample1"
-    (with-in-str "3 3\n...\n...\n...\n"
-      (is (= (read-input-borad) (input-borad1)))))
+    (with-in-str "...\n...\n...\n"
+      (is (= (read-input-borad 3) (input-borad1)))))
   (testing "sample2"
-    (with-in-str "4 4\n####\n####\n....\n##..\n"
-      (is (= (read-input-borad) (input-borad2))))))
+    (with-in-str "####\n####\n....\n##..\n"
+      (is (= (read-input-borad 4) (input-borad2))))))
 
 (deftest update-borad-test
   (testing "sample1"
