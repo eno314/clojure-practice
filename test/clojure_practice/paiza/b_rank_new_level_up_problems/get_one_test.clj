@@ -1,5 +1,5 @@
 (ns clojure-practice.paiza.b-rank-new-level-up-problems.get-one-test
-  (:require [clojure-practice.paiza.b-rank-new-level-up-problems.get-one :refer [read-input-borad update-borad]]
+  (:require [clojure-practice.paiza.b-rank-new-level-up-problems.get-one :refer [board-row-to-line read-input-borad update-borad]]
             [clojure.test :refer [deftest is testing]]))
 
 (defn input-borad1 []
@@ -35,3 +35,6 @@
               [true, false, true, true]
               [false, false, false, false],
               [true, true, false, false]])))))
+
+(deftest board-row-to-line-test
+  (is (= (board-row-to-line [true, false, false]) "#..")))
