@@ -8,3 +8,7 @@
 (defn read-input-borad []
   (let [[x] (read-int-values-line)]
     (map #(line-to-bord %) (readlines x))))
+
+(defn update-borad [borad x y]
+  (let [borad-x-y (get-in borad [x y])]
+    (assoc-in borad [x y] (not borad-x-y))))
