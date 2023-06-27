@@ -3,17 +3,17 @@
                                                  readlines]]))
 
 (defn line-to-board-row [line]
-  (map #(= % \#) (seq line)))
+  (vec (map #(= % \#) (seq line))))
 
 (defn read-input-borad [h]
-  (map #(line-to-board-row %) (readlines h)))
+  (vec (map #(line-to-board-row %) (readlines h))))
 
 (defn update-borad [borad x y]
   (let [borad-x-y (get-in borad [x y])]
     (assoc-in borad [x y] (not borad-x-y))))
 
 (defn board-row-to-line [row]
-  (apply str (map #(if % \# \.) row)))
+  (apply str (vec (map #(if % \# \.) row))))
 
 (defn main []
   (let [[h _] (read-int-values-line)
@@ -22,5 +22,6 @@
         new-borad (update-borad borad x y)]
     (doseq [line new-borad]
       (println (board-row-to-line line)))))
+
 
 ;(main)
