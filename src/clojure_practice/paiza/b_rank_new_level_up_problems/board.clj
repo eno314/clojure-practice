@@ -4,12 +4,12 @@
 (defn line-to-board-row [line]
   (vec (map #(= % \#) (seq line))))
 
-(defn read-input-borad [h]
+(defn read-input-board [h]
   (vec (map #(line-to-board-row %) (readlines h))))
 
-(defn update-borad [borad x y]
-  (let [borad-x-y (get-in borad [x y])]
-    (assoc-in borad [x y] (not borad-x-y))))
+(defn update-board [board x y]
+  (let [board-x-y (get-in board [x y])]
+    (assoc-in board [x y] (not board-x-y))))
 
 (defn board-row-to-line [row]
   (apply str (vec (map #(if % \# \.) row))))
