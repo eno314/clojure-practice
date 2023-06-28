@@ -14,4 +14,7 @@
   (string/split line #","))
 
 (defn readlines-splitted-by-space [line-lenght]
-  (map split-line-by-space (readlines line-lenght)))
+  (vec (map split-line-by-space (readlines line-lenght))))
+
+(defn read-int-values-line []
+  (vec (map #(Integer/parseInt %) (split-line-by-space (read-line)))))
