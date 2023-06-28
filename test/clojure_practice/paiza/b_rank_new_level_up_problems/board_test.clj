@@ -1,5 +1,5 @@
-(ns clojure-practice.paiza.b-rank-new-level-up-problems.get-one-test
-  (:require [clojure-practice.paiza.b-rank-new-level-up-problems.get-one :refer [board-row-to-line read-input-borad update-borad]]
+(ns clojure-practice.paiza.b-rank-new-level-up-problems.board-test
+  (:require [clojure-practice.paiza.b-rank-new-level-up-problems.board :refer [board-row-to-line read-input-borad update-borad]]
             [clojure.test :refer [deftest is testing]]))
 
 (defn input-borad1 []
