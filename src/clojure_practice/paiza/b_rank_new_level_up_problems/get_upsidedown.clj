@@ -13,7 +13,7 @@
 (defn main []
   (let [[h] (read-int-values-line)
         board (read-input-board h)
-        [x y] (read-int-values-line)
+        [y x] (read-int-values-line)
         new-board (update-board-all-point board x y)]
     (doseq [line new-board]
       (println (board-row-to-line line)))))

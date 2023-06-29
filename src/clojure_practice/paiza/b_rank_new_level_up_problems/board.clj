@@ -12,8 +12,8 @@
 
 (defn update-board [board x y]
   (if (should-update-board board x y)
-    (let [board-x-y (get-in board [x y])]
-      (assoc-in board [x y] (not board-x-y)))
+    (let [board-x-y (get-in board [y x])]
+      (assoc-in board [y x] (not board-x-y)))
     board))
 
 (defn board-row-to-line [row]
