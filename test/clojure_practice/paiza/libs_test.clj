@@ -1,7 +1,8 @@
 (ns clojure-practice.paiza.libs-test
   (:require [clojure-practice.paiza.libs :refer [read-int-value-line
-                                                 read-int-values-line readlines
-                                                 readlines-splitted-by-space split-line-by-comma split-line-by-space]]
+                                                 read-int-values-line
+                                                 read-int-values-lines readlines readlines-splitted-by-space split-line-by-comma
+                                                 split-line-by-space]]
             [clojure.test :refer [deftest is testing]]))
 
 (deftest test-readlines
@@ -38,3 +39,9 @@
     (is (= (read-int-values-line) [1 2 3 4 5])))
   (with-in-str "1 2\n"
     (is (= (read-int-values-line) [1 2]))))
+
+(deftest read-int-values-lines-test
+  (with-in-str "1 2\n3\n4 5\n"
+    (is (= (read-int-values-lines 2) [[1 2] [3]])))
+  (with-in-str "1 2\n3\n4 5\n"
+    (is (= (read-int-values-lines 3) [[1 2] [3] [4 5]]))))

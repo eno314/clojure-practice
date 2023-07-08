@@ -16,5 +16,8 @@
       (assoc-in board [y x] (not board-x-y)))
     board))
 
+(defn board-value-to-str [value]
+  (if value \# \.))
+
 (defn board-row-to-line [row]
-  (apply str (vec (map #(if % \# \.) row))))
+  (apply str (vec (map #(board-value-to-str %) row))))
