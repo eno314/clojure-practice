@@ -1,4 +1,4 @@
-(ns clojure-practice.paiza.b-rank-new-level-up-problems.board
+(ns clojure-practice.paiza.board
   (:require [clojure-practice.paiza.libs :refer [readlines]]))
 
 (defn line-to-board-row [line]
@@ -16,5 +16,8 @@
       (assoc-in board [y x] (not board-x-y)))
     board))
 
+(defn board-value-to-str [value]
+  (if value \# \.))
+
 (defn board-row-to-line [row]
-  (apply str (vec (map #(if % \# \.) row))))
+  (apply str (vec (map #(board-value-to-str %) row))))

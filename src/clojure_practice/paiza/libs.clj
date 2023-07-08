@@ -18,3 +18,6 @@
 
 (defn read-int-values-line []
   (vec (map #(Integer/parseInt %) (split-line-by-space (read-line)))))
+
+(defn read-int-values-lines [line-lenght]
+  (take line-lenght (repeatedly read-int-values-line)))
