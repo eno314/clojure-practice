@@ -1,4 +1,4 @@
-(ns clojure-practice.paiza.b-rank-new-level-up-problems.board
+(ns clojure-practice.paiza.board
   (:require [clojure-practice.paiza.libs :refer [readlines]]))
 
 (defn line-to-board-row [line]
