@@ -5,7 +5,7 @@
   (take line-lenght (repeatedly read-line)))
 
 (defn read-int-value-line []
-  (Integer/parseInt (read-line)))
+  (Long/parseLong (read-line)))
 
 (defn split-line-by-space [line]
   (string/split line #" "))
@@ -17,7 +17,7 @@
   (vec (map split-line-by-space (readlines line-lenght))))
 
 (defn read-int-values-line []
-  (vec (map #(Integer/parseInt %) (split-line-by-space (read-line)))))
+  (vec (map #(Long/parseLong %) (split-line-by-space (read-line)))))
 
 (defn read-int-values-lines [line-lenght]
   (take line-lenght (repeatedly read-int-values-line)))
