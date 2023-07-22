@@ -2,10 +2,7 @@
   (:require [clojure-practice.paiza.libs :refer [read-int-value-line
                                                  read-int-values-lines]]))
 
-(defn main []
+(defn load-data []
   (let [n (read-int-value-line)
-        time_points (read-int-values-lines n)]
-    (doseq [[time x y] time_points]
-      (println (str time " " x " " y)))))
-
-(main)
+        time-and-locs (read-int-values-lines n)]
+    (vec (map (fn [[time x y]] {:time time :loc [x y]}) time-and-locs))))
