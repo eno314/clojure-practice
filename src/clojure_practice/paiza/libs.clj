@@ -21,3 +21,4 @@
 
 (defn read-int-values-lines [line-lenght]
   (take line-lenght (repeatedly read-int-values-line)))
+
