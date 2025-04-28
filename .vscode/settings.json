@@ -3,5 +3,10 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "never"
     },
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "cSpell.words": [
+        "defn",
+        "mapv",
+        "println"
+    ]
 }
