@@ -1,4 +1,4 @@
-(ns clojure-practice.number-place.validator)
+(ns clojure-practice.number-place.board)
 
 (defn- no-duplicate-numbers? [numbers]
   (let [numbers-without-nil (filter some? numbers)]
@@ -19,3 +19,9 @@
   (and (every? no-duplicate-numbers? board-data)
        (every? #(no-duplicate-in-column? board-data %) (range 9))
        (every? #(no-duplicate-in-block? board-data %) (range 9))))
+
+(defn find-board-empty-pos [board-data]
+  (first (for [row (range (count board-data))
+               col (range (count (first board-data)))
+               :when (nil? (get-in board-data [row col]))]
+           [row col])))

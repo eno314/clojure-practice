@@ -1,4 +1,4 @@
-(ns clojure-practice.number-place.input-converter
+(ns clojure-practice.number-place.in-out-converter
   (:require
    [clojure.string :as str]))
 
@@ -27,7 +27,7 @@
 
 (defn- board-str-to-data [board-str]
   (let [lines (str/split-lines board-str)]
-    (if (not= (count lines) 9)
+    (if (< (count lines) 9)
       (throw (Exception. "Input must be 9 lines"))
       (mapv board-line-to-data lines))))
 
@@ -37,4 +37,6 @@
       (board-str-to-data)))
 
 (defn board-data-to-output-str [board-data]
-  (str/join "\n" (map #(str/join "" %) board-data)))
+  (if (nil? board-data)
+    (throw (Exception. "Invalid number place pattern"))
+    (str/join "\n" (map #(str/join "" %) board-data))))

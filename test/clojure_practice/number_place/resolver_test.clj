@@ -21,8 +21,50 @@
                                   "713924856\n"
                                   "961537284\n"
                                   "287419635\n"
-                                  "345286179")]
-      (acceptance-test input-file-content, (str input-file-content "\n"))))
+                                  "345286179\n")]
+      (acceptance-test input-file-content, input-file-content)))
+
+  (testing "1つ数字が埋まっていないとき"
+    (let [input-file-content (str "534678912\n"
+                                  "672195348\n"
+                                  "198342567\n"
+                                  "859761423\n"
+                                  "426853791\n"
+                                  "713924856\n"
+                                  "961537284\n"
+                                  "287419635\n"
+                                  "34528617.")
+          expected (str "534678912\n"
+                        "672195348\n"
+                        "198342567\n"
+                        "859761423\n"
+                        "426853791\n"
+                        "713924856\n"
+                        "961537284\n"
+                        "287419635\n"
+                        "345286179\n")]
+      (acceptance-test input-file-content, expected)))
+
+  (testing "複数数字が埋まっていないとき"
+    (let [input-file-content (str "..4678912\n"
+                                  "..2195348\n"
+                                  "198342567\n"
+                                  "859761423\n"
+                                  "426853791\n"
+                                  "713924856\n"
+                                  "961537284\n"
+                                  "2874196..\n"
+                                  ".452861..")
+          expected (str "534678912\n"
+                        "672195348\n"
+                        "198342567\n"
+                        "859761423\n"
+                        "426853791\n"
+                        "713924856\n"
+                        "961537284\n"
+                        "287419635\n"
+                        "345286179\n")]
+      (acceptance-test input-file-content, expected)))
 
   (testing "引数がない場合はエラーメッセージを出力する"
     (let [expected-error "Error: Please provide a file path as an argument\n"
