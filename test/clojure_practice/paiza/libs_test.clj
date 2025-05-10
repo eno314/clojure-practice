@@ -1,9 +1,13 @@
 (ns clojure-practice.paiza.libs-test
-  (:require [clojure-practice.paiza.libs :refer [read-int-value-line
-                                                 read-int-values-line
-                                                 read-int-values-lines readlines readlines-splitted-by-space split-line-by-comma
-                                                 split-line-by-space]]
-            [clojure.test :refer [deftest is testing]]))
+  (:require
+   [clojure-practice.paiza.libs :refer [read-int-value-line
+                                        read-int-values-line
+                                        read-int-values-lines
+                                        read-line-splitted-by-space readlines
+                                        readlines-splitted-by-space
+                                        split-line-by-comma
+                                        split-line-by-space]]
+   [clojure.test :refer [deftest is testing]]))
 
 (deftest test-readlines
   (testing "readlines with line-length 3"
@@ -45,3 +49,7 @@
     (is (= (read-int-values-lines 2) [[1 2] [3]])))
   (with-in-str "1 2\n3\n4 5\n"
     (is (= (read-int-values-lines 3) [[1 2] [3] [4 5]]))))
+
+(deftest read-line-splitted-by-space-test
+  (with-in-str "P A I Z A"
+    (is (= (read-line-splitted-by-space) ["P" "A" "I" "Z" "A"]))))
