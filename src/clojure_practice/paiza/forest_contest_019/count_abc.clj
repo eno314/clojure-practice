@@ -1,11 +1,15 @@
-(ns clojure-practice.paiza.forest-contest-019.count-abc)
+(ns clojure-practice.paiza.forest-contest-019.count-abc
+  (:require
+   [clojure-practice.paiza.libs :refer [readlines split-line-by-space]]))
 
-(defn- count-char-in-str [str c]
-  (count (filter #(= c %) str)))
+(defn- print-count-abc [frequencies-result]
+  (println (get frequencies-result "A" 0))
+  (println (get frequencies-result "B" 0))
+  (println (get frequencies-result "C" 0)))
 
 (defn main []
-  (let [_ (read-line)
-        line (read-line)]
-    (println (count-char-in-str line \A))
-    (println (count-char-in-str line \B))
-    (println (count-char-in-str line \C))))
+  (-> (readlines 2)
+      (second)
+      (split-line-by-space)
+      (frequencies)
+      (print-count-abc)))
