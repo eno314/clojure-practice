@@ -20,7 +20,7 @@
   (mapv #(Long/parseLong %) (split-line-by-space (read-line))))
 
 (defn read-int-values-lines [line-length]
-  (take line-length (repeatedly read-int-values-line)))
+  (vec (take line-length (repeatedly read-int-values-line))))
 
 (defn read-line-split-by-space []
   (split-line-by-space (read-line)))
