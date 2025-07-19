@@ -17,7 +17,6 @@
     (with-in-str "a\nbb\nccc\ndddd\neeeee\n"
       (is (= (read-lines 5) ["a" "bb" "ccc" "dddd" "eeeee"])))))
 
-
 (deftest test-read-int-value-line
   (with-in-str "123\n"
     (is (= (read-int-value-line) 123))))

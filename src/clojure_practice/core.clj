@@ -1,6 +1,5 @@
 (ns clojure-practice.core)
 
-
 (defn read-input []
   {})
 

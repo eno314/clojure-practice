@@ -32,7 +32,6 @@
   (is (= (count-pass-between-left-and-center 11) 5))
   (is (= (count-pass-between-left-and-center 12) 6)))
 
-
 (deftest calc-extra-moved-test
   (is (= (calc-extra-moved 1 3 10) 6))
   (is (= (calc-extra-moved 2 5 20) 30)))
