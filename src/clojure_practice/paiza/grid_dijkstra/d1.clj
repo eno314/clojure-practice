@@ -3,55 +3,62 @@
    [clojure-practice.paiza.libs :refer [read-int-values-line
                                         read-int-values-lines]]))
 
-(def DISABLED_GRID_VALUE 1)
+;; 入力データの定数値
+(def DISABLED_INPUT_GRID_VALUE 1)
 
-(def DISABLED_POINT_VALUE -1)
-(def NOT_VISITED_POINT_VALUE 0)
+;; 計算時に使う定数値
+(def DISABLED_GRID_VALUE -1)
+(def NOT_VISITED_GRID_VALUE 0)
+(def START_GRID_DISTANCE 1)
 
+;; 入力データを読み込み、グリッドの高さ・幅・マップデータを取得
 (defn- read-input []
-  (let [int-values (read-int-values-line)
-        h (first int-values)]
-    {:h h
-     :w (second int-values)
-     :grid (read-int-values-lines h)}))
+  (let [[height width] (read-int-values-line)]
+    [height width (read-int-values-lines height)]))
 
-(defn- init-distances [{:keys [grid]}]
-  (-> (mapv (fn [row]
-              (mapv #(if (= % DISABLED_GRID_VALUE)
-                       DISABLED_POINT_VALUE
-                       NOT_VISITED_POINT_VALUE)
-                    row))
-            grid)
-      ; 先頭のコストを1にしておく
-      (assoc-in [0 0] 1)))
+;; グリッドを初期化：通れないマスと通れるマスを変換し、スタート位置の距離を設定
+(defn- init-grid [input-grid]
+  (let [grid (mapv (fn [row]
+                     (mapv #(if (= % DISABLED_INPUT_GRID_VALUE)
+                              DISABLED_GRID_VALUE
+                              NOT_VISITED_GRID_VALUE)
+                           row))
+                   input-grid)]
+    (assoc-in grid [0 0] START_GRID_DISTANCE)))
 
-(defn- candidate? [distances pos]
-  (as-> (get-in distances pos) result
-    (and (not (nil? result))
-         (= result NOT_VISITED_POINT_VALUE))))
+;; 指定された位置がグリッド内の有効な座標かチェック
+(defn- valid-position? [[height width] [row col]]
+  (and (>= row 0) (< row height) (>= col 0) (< col width)))
 
-(defn- update-calc-loop-args [distances queue-to-visit next-pos next-distance]
-  (if (candidate? distances next-pos)
-    [(assoc-in distances next-pos next-distance) (conj queue-to-visit next-pos)]
-    [distances queue-to-visit]))
 
-(defn- calc-shortest-distances [distances]
-  (loop [d distances
-         queue-to-visit (conj clojure.lang.PersistentQueue/EMPTY [0 0])]
-    (if (empty? queue-to-visit)
-      d
-      (let [current-pos (peek queue-to-visit)
-            next-d (inc (get-in d current-pos))
-            right-pos (assoc current-pos 1 (inc (second current-pos)))
-            below-pos (assoc current-pos 0 (inc (first current-pos)))
-            left-pos (assoc current-pos 1 (dec (second current-pos)))
-            top-pos (assoc current-pos 0 (dec (first current-pos)))]
-        (as-> (update-calc-loop-args d (pop queue-to-visit) right-pos next-d) args
-          (update-calc-loop-args (first args) (second args) below-pos next-d)
-          (update-calc-loop-args (first args) (second args) left-pos next-d)
-          (update-calc-loop-args (first args) (second args) top-pos next-d)
-          (recur (first args) (second args)))))))
+;; 指定された位置の上下左右の隣接位置を取得
+(defn- neighbors [[row col]]
+  [[(inc row) col] [row (inc col)] [(dec row) col] [row (dec col)]])
 
+;; 現在位置から隣接する位置を訪問し、距離を更新してキューに追加
+(defn- visit-neighbors [distance-grid height-width current-pos queue-to-visit]
+  (let [current-distance (get-in distance-grid current-pos)
+        next-distance (inc current-distance)]
+    (reduce (fn [[grid queue] neighbor]
+              (if (and (valid-position? height-width neighbor)
+                       (= (get-in grid neighbor) NOT_VISITED_GRID_VALUE))
+                [(assoc-in grid neighbor next-distance) (conj queue neighbor)]
+                [grid queue]))
+            [distance-grid queue-to-visit]
+            (neighbors current-pos))))
+
+;; 幅優先探索で最短経路の距離を計算
+(defn- calculate-shortest-path [distance-grid height-width]
+  (loop [grid distance-grid
+         pos-to-visit (conj clojure.lang.PersistentQueue/EMPTY [0 0])]
+    (if (empty? pos-to-visit)
+      grid
+      (let [current-position (peek pos-to-visit)
+            [updated-grid updated-queue] (visit-neighbors grid
+                                                          height-width
+                                                          current-position
+                                                          (pop pos-to-visit))]
+        (recur updated-grid updated-queue)))))
 
 (defn main
   "https://paiza.jp/works/mondai/grid_dijkstra/grid_dijkstra__d1h
@@ -63,9 +70,8 @@
    ・ 続く h 行のうち i 行目には、盤面 の i 行目を表す整数値のリスト t_i が与えられます。
    ・ t_{i,j} は i 行目の j 列目の値です。"
   []
-  (-> (read-input)
-      (init-distances)
-      (calc-shortest-distances)
-      (last)
-      (last)
-      (println)))
+  (let [[height width grid] (read-input)]
+    (-> (init-grid grid)
+        (calculate-shortest-path [height width])
+        (get-in [(dec height) (dec width)])
+        (println))))
