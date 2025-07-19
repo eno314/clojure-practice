@@ -1,11 +1,11 @@
 (ns clojure-practice.paiza.board
-  (:require [clojure-practice.paiza.libs :refer [readlines]]))
+  (:require [clojure-practice.paiza.libs :refer [read-lines]]))
 
 (defn line-to-board-row [line]
   (vec (map #(= % \#) (seq line))))
 
 (defn read-input-board [h]
-  (vec (map #(line-to-board-row %) (readlines h))))
+  (vec (map #(line-to-board-row %) (read-lines h))))
 
 (defn should-update-board [board x y]
   (and (>= x 0) (>= y 0) (< x (count (first board))) (< y (count board))))
