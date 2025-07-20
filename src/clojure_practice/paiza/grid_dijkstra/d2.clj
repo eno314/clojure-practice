@@ -35,39 +35,55 @@
                  (>= c 0) (< c width)))
           [[(inc row) col] [row (inc col)] [(dec row) col] [row (dec col)]]))
 
-;; 未訪問のポイントのうち、最小のtotal-costを持つポイントを見つける
-(defn- find-min-unvisited [grid [height width]]
-  (let [all-points (for [row (range height)
-                         col (range width)]
-                     (get-in grid [row col]))
-        unvisited-points (filter #(not (:visited? %)) all-points)]
-    (when (seq unvisited-points)
-      (apply min-key :total-cost unvisited-points))))
+;; 優先度付きキュー（ヒープ）を作成
+(defn- create-priority-queue []
+  (sorted-set-by (fn [a b]
+                   (let [cost-compare (compare (:total-cost a) (:total-cost b))]
+                     (if (zero? cost-compare)
+                       (compare (:position a) (:position b))
+                       cost-compare)))))
+
+;; 優先度付きキューに要素を追加
+(defn- enqueue [queue item]
+  (conj queue item))
+
+;; 優先度付きキューから最小要素を取り出す
+(defn- dequeue [queue]
+  (let [item (first queue)]
+    [item (disj queue item)]))
 
 ;; 指定された位置の上下左右の隣接位置を訪問して、合計コストを更新
-(defn- visit-neighbors [grid current-point height-width]
-  (reduce (fn [updated-grid neighbor-pos]
+(defn- visit-neighbors [grid current-point height-width queue]
+  (reduce (fn [[updated-grid updated-queue] neighbor-pos]
             (let [neighbor-point (get-in updated-grid neighbor-pos)
                   new-total-cost (+ (:total-cost current-point)
                                     (:cost neighbor-point))]
               (if (and (not (:visited? neighbor-point))
                        (< new-total-cost (:total-cost neighbor-point)))
-                (assoc-in updated-grid neighbor-pos
-                          (assoc neighbor-point :total-cost new-total-cost))
-                updated-grid)))
-          grid
+                (let [updated-neighbor-point (assoc neighbor-point :total-cost new-total-cost)
+                      updated-grid-with-neighbor (assoc-in updated-grid neighbor-pos updated-neighbor-point)
+                      ;; 既存の同じ位置のポイントを削除してから新しいポイントを追加
+                      queue-without-old (reduce #(disj %1 %2) updated-queue
+                                                (filter #(= (:position %) neighbor-pos) updated-queue))
+                      enqueued-queue (enqueue queue-without-old updated-neighbor-point)]
+                  [updated-grid-with-neighbor enqueued-queue])
+                [updated-grid updated-queue])))
+          [grid queue]
           (neighbors (:position current-point) height-width)))
 
-;; ダイクストラ法で最短経路のコストを計算
+;; ダイクストラ法で最短経路のコストを計算（優先度付きキュー使用）
 (defn- calculate-shortest-cost [grid height-width]
-  (loop [grid grid]
-    (let [current-point (find-min-unvisited grid height-width)]
-      (if (nil? current-point)
-        grid
-        (let [visited-grid (assoc-in grid (:position current-point)
-                                     (assoc current-point :visited? true))
-              updated-grid (visit-neighbors visited-grid current-point height-width)]
-          (recur updated-grid))))))
+  (loop [grid grid
+         queue (enqueue (create-priority-queue) (get-in grid [0 0]))]
+    (if (empty? queue)
+      grid
+      (let [[current-point remaining-queue] (dequeue queue)]
+        (if (:visited? current-point)
+          (recur grid remaining-queue)
+          (let [visited-grid (assoc-in grid (:position current-point)
+                                       (assoc current-point :visited? true))
+                [updated-grid updated-queue] (visit-neighbors visited-grid current-point height-width remaining-queue)]
+            (recur updated-grid updated-queue)))))))
 
 
 (defn main
