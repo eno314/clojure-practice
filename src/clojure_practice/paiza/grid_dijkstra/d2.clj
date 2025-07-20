@@ -36,16 +36,22 @@
           [[(inc row) col] [row (inc col)] [(dec row) col] [row (dec col)]]))
 
 ;; 優先度付きキュー（ヒープ）を作成
+;; コストが異なる場合は、コストの小さい方が優先
+;; コストが同じ場合は、位置のハッシュ値で安定した順序を保証
 (defn- create-priority-queue []
   (sorted-set-by (fn [a b]
-                   (let [cost-compare (compare (:total-cost a) (:total-cost b))]
-                     (if (zero? cost-compare)
-                       (compare (:position a) (:position b))
-                       cost-compare)))))
+                   (if (= (:total-cost a) (:total-cost b))
+                     (< (hash (:position a)) (hash (:position b)))
+                     (< (:total-cost a) (:total-cost b))))))
 
 ;; 優先度付きキューに要素を追加
+;; 既存の同じ位置のポイントを削除してから新しいポイントを追加
 (defn- enqueue [queue item]
-  (conj queue item))
+  (let [item-pos (:position item)
+        queue-without-old (reduce #(disj %1 %2)
+                                  queue
+                                  (filter #(= (:position %) item-pos) queue))]
+    (conj queue-without-old item)))
 
 ;; 優先度付きキューから最小要素を取り出す
 (defn- dequeue [queue]
@@ -60,12 +66,14 @@
                                     (:cost neighbor-point))]
               (if (and (not (:visited? neighbor-point))
                        (< new-total-cost (:total-cost neighbor-point)))
-                (let [updated-neighbor-point (assoc neighbor-point :total-cost new-total-cost)
-                      updated-grid-with-neighbor (assoc-in updated-grid neighbor-pos updated-neighbor-point)
-                      ;; 既存の同じ位置のポイントを削除してから新しいポイントを追加
-                      queue-without-old (reduce #(disj %1 %2) updated-queue
-                                                (filter #(= (:position %) neighbor-pos) updated-queue))
-                      enqueued-queue (enqueue queue-without-old updated-neighbor-point)]
+                (let [updated-neighbor-point (assoc neighbor-point
+                                                    :total-cost
+                                                    new-total-cost)
+                      updated-grid-with-neighbor (assoc-in updated-grid
+                                                           neighbor-pos
+                                                           updated-neighbor-point)
+                      enqueued-queue (enqueue updated-queue
+                                              updated-neighbor-point)]
                   [updated-grid-with-neighbor enqueued-queue])
                 [updated-grid updated-queue])))
           [grid queue]
@@ -77,13 +85,14 @@
          queue (enqueue (create-priority-queue) (get-in grid [0 0]))]
     (if (empty? queue)
       grid
-      (let [[current-point remaining-queue] (dequeue queue)]
-        (if (:visited? current-point)
-          (recur grid remaining-queue)
-          (let [visited-grid (assoc-in grid (:position current-point)
-                                       (assoc current-point :visited? true))
-                [updated-grid updated-queue] (visit-neighbors visited-grid current-point height-width remaining-queue)]
-            (recur updated-grid updated-queue)))))))
+      (let [[current-point remaining-queue] (dequeue queue)
+            visited-grid (assoc-in grid (:position current-point)
+                                   (assoc current-point :visited? true))
+            [updated-grid updated-queue] (visit-neighbors visited-grid
+                                                          current-point
+                                                          height-width
+                                                          remaining-queue)]
+        (recur updated-grid updated-queue)))))
 
 
 (defn main
