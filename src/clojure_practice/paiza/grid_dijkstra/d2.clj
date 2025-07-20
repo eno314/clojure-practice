@@ -3,96 +3,91 @@
    [clojure-practice.paiza.libs :refer [read-int-values-line
                                         read-int-values-lines]]))
 
-;; コストの最大値
-(def MAX_TOAL_COST Integer/MAX_VALUE)
-
 ;; 入力データを読み込み、グリッドの高さ・幅・マップデータを取得
 (defn- read-input []
   (let [[height width] (read-int-values-line)]
     [height width (read-int-values-lines height)]))
 
-;; グリッドのポイントを初期化
+;; グリッドのポイントを初期化（最適化版）
 (defn- init-grid-point [row col cost]
   {:position [row col]
    :cost cost
-   :total-cost (if (and (zero? row) (zero? col)) cost MAX_TOAL_COST)
+   :total-cost (if (and (zero? row) (zero? col)) cost Long/MAX_VALUE)
    :visited? false})
 
-
-;; グリッドを初期化
-;; - 位置情報,コスト,合計コスト(初期値はMAX_TOAL_COST),確定済みフラグを持つグリッドを作成
-;; - スタート位置の合計コストだけは、コストの値を設定
+;; グリッドを初期化（最適化版）
 (defn- init-grid [input-grid]
-  (vec
-   (map-indexed (fn [row cols]
-                  (vec (map-indexed #(init-grid-point row %1 %2) cols)))
-                input-grid)))
+  (let [height (count input-grid)
+        width (count (first input-grid))]
+    (vec (for [row (range height)]
+           (vec (for [col (range width)]
+                  (init-grid-point row col (get-in input-grid [row col]))))))))
 
-;; 指定された位置の上下左右の隣接位置を取得
+;; 指定された位置の上下左右の隣接位置を取得（最適化版）
 (defn- neighbors [[row col] [height width]]
-  (filter (fn [[r c]]
-            (and (>= r 0) (< r height)
-                 (>= c 0) (< c width)))
-          [[(inc row) col] [row (inc col)] [(dec row) col] [row (dec col)]]))
+  (let [candidates [[(inc row) col] [row (inc col)] [(dec row) col] [row (dec col)]]
+        [h w] [height width]]
+    (filter (fn [[r c]]
+              (and (>= r 0) (< r h) (>= c 0) (< c w)))
+            candidates)))
 
-;; 優先度付きキュー（ヒープ）を作成
-;; コストが異なる場合は、コストの小さい方が優先
-;; コストが同じ場合は、位置のハッシュ値で安定した順序を保証
+;; JavaのPriorityQueueを使用した効率的な優先度付きキュー
 (defn- create-priority-queue []
-  (sorted-set-by (fn [a b]
-                   (if (= (:total-cost a) (:total-cost b))
-                     (< (hash (:position a)) (hash (:position b)))
-                     (< (:total-cost a) (:total-cost b))))))
+  (java.util.PriorityQueue.
+   (comparator (fn [a b]
+                 (if (= (:total-cost a) (:total-cost b))
+                   (< (hash (:position a)) (hash (:position b)))
+                   (< (:total-cost a) (:total-cost b)))))))
 
-;; 優先度付きキューに要素を追加
-;; 既存の同じ位置のポイントを削除してから新しいポイントを追加
+;; 優先度付きキューに要素を追加（Java PriorityQueue版）
 (defn- enqueue [queue item]
-  (let [item-pos (:position item)
-        queue-without-old (reduce #(disj %1 %2)
-                                  queue
-                                  (filter #(= (:position %) item-pos) queue))]
-    (conj queue-without-old item)))
+  (.offer queue item)
+  queue)
 
-;; 優先度付きキューから最小要素を取り出す
+;; 優先度付きキューから最小要素を取り出す（Java PriorityQueue版）
 (defn- dequeue [queue]
-  (let [item (first queue)]
-    [item (disj queue item)]))
+  (let [item (.poll queue)]
+    [item queue]))
 
-;; 指定された位置の上下左右の隣接位置を訪問して、合計コストを更新
+;; 指定された位置の上下左右の隣接位置を訪問して、合計コストを更新（Java PriorityQueue版）
 (defn- visit-neighbors [grid current-point height-width queue]
-  (reduce (fn [[updated-grid updated-queue] neighbor-pos]
-            (let [neighbor-point (get-in updated-grid neighbor-pos)
-                  new-total-cost (+ (:total-cost current-point)
-                                    (:cost neighbor-point))]
-              (if (and (not (:visited? neighbor-point))
-                       (< new-total-cost (:total-cost neighbor-point)))
-                (let [updated-neighbor-point (assoc neighbor-point
-                                                    :total-cost
-                                                    new-total-cost)
-                      updated-grid-with-neighbor (assoc-in updated-grid
-                                                           neighbor-pos
-                                                           updated-neighbor-point)
-                      enqueued-queue (enqueue updated-queue
-                                              updated-neighbor-point)]
-                  [updated-grid-with-neighbor enqueued-queue])
-                [updated-grid updated-queue])))
-          [grid queue]
-          (neighbors (:position current-point) height-width)))
+  (let [current-total-cost (:total-cost current-point)
+        neighbor-positions (neighbors (:position current-point) height-width)]
+    (reduce (fn [[updated-grid updated-queue] neighbor-pos]
+              (let [neighbor-point (get-in updated-grid neighbor-pos)]
+                (if (and (not (:visited? neighbor-point))
+                         (< (+ current-total-cost (:cost neighbor-point))
+                            (:total-cost neighbor-point)))
+                  (let [new-total-cost (+ current-total-cost (:cost neighbor-point))
+                        updated-neighbor-point (assoc neighbor-point
+                                                      :total-cost
+                                                      new-total-cost)
+                        updated-grid-with-neighbor (assoc-in updated-grid
+                                                             neighbor-pos
+                                                             updated-neighbor-point)
+                        enqueued-queue (enqueue updated-queue
+                                                updated-neighbor-point)]
+                    [updated-grid-with-neighbor enqueued-queue])
+                  [updated-grid updated-queue])))
+            [grid queue]
+            neighbor-positions)))
 
-;; ダイクストラ法で最短経路のコストを計算（優先度付きキュー使用）
+;; ダイクストラ法で最短経路のコストを計算（Java PriorityQueue版）
 (defn- calculate-shortest-cost [grid height-width]
   (loop [grid grid
          queue (enqueue (create-priority-queue) (get-in grid [0 0]))]
-    (if (empty? queue)
-      grid
-      (let [[current-point remaining-queue] (dequeue queue)
-            visited-grid (assoc-in grid (:position current-point)
-                                   (assoc current-point :visited? true))
-            [updated-grid updated-queue] (visit-neighbors visited-grid
-                                                          current-point
-                                                          height-width
-                                                          remaining-queue)]
-        (recur updated-grid updated-queue)))))
+    (let [[current-point remaining-queue] (dequeue queue)]
+      (if (nil? current-point)
+        grid
+        (if (:visited? current-point)
+          (recur grid remaining-queue)
+          (let [visited-grid (assoc-in grid (:position current-point)
+                                       (assoc current-point :visited? true))
+                [updated-grid updated-queue] (visit-neighbors visited-grid
+                                                              current-point
+                                                              height-width
+                                                              remaining-queue)]
+            (recur updated-grid updated-queue)))))))
 
 
 (defn main

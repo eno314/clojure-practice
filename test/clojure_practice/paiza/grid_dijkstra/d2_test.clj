@@ -18,11 +18,11 @@
            [3 9 7 9 3 2]]
     :expected "17\n"}
 
-   :grid-100x100
-   {:height 100 :width 100
-    :grid (vec (for [_ (range 100)]
-                 (vec (for [_ (range 100)] 1))))
-    :expected "199\n"}
+   :grid-big-size
+   {:height 250 :width 250
+    :grid (vec (for [_ (range 250)]
+                 (vec (for [_ (range 250)] 1))))
+    :expected "499\n"}
 
    :grid-7x7-pattern
    {:height 7 :width 7
@@ -46,5 +46,5 @@
 
 (deftest d2
   (run-test-case "入力例" (:original-example test-cases))
-  (run-test-case "大きなグリッド（100x100）" (:grid-100x100 test-cases))
+  (run-test-case "大きなグリッド" (:grid-big-size test-cases))
   (run-test-case "複雑なパターンのグリッド（7x7）" (:grid-7x7-pattern test-cases)))
