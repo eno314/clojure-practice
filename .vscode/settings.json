@@ -6,6 +6,7 @@
     "editor.formatOnSave": true,
     "cSpell.words": [
         "defn",
+        "disj",
         "doseq",
         "mapv",
         "paiza",
