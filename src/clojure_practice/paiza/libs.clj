@@ -24,3 +24,6 @@
 
 (defn read-line-split-by-space []
   (split-line-by-space (read-line)))
+
+(defn read-int-lines [line-length]
+  (vec (take line-length (repeatedly read-int-value-line))))
