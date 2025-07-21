@@ -1,6 +1,6 @@
 (ns clojure-practice.paiza.libs-test
   (:require
-   [clojure-practice.paiza.libs :refer [read-int-value-line
+   [clojure-practice.paiza.libs :refer [read-int-lines read-int-value-line
                                         read-int-values-line
                                         read-int-values-lines
                                         read-line-split-by-space read-lines
@@ -52,3 +52,9 @@
 (deftest read-line-split-by-space-test
   (with-in-str "P A I Z A"
     (is (= (read-line-split-by-space) ["P" "A" "I" "Z" "A"]))))
+
+(deftest read-int-lines-test
+  (with-in-str "1\n2\n3\n4\n5\n"
+    (is (= (read-int-lines 2) [1 2])))
+  (with-in-str "1\n2\n3\n4\n5\n"
+    (is (= (read-int-lines 3) [1 2 3]))))
