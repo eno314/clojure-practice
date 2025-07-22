@@ -8,7 +8,7 @@
     (let [actual (with-out-str (main))
           expected "5\n"]
       (is (= expected actual))))
-  (with-in-str "5\n104\n103\n102\n101\n100\n"
+  (with-in-str "5\n104\n104\n102\n101\n100\n"
     (let [actual (with-out-str (main))
           expected "1\n"]
       (is (= expected actual))))
