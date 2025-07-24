@@ -22,9 +22,6 @@
                    (mapv #(calc-dp-value-at dp i % (nth weights (dec i)))
                          (range (inc goal-weight))))))))
 
-(defn- create-weight? [dp w]
-  (some true? (flatten (map #(nth % w) dp))))
-
 (defn main
   "https://paiza.jp/works/mondai/dp_primer/dp_primer_partial_sums_step0
    1 ~ n の番号がついた n 個のおもりがあり、おもり i の重さは a_i です。
@@ -40,6 +37,6 @@
   (let [[n goal-weight] (read-int-values-line)
         weights (read-int-lines n)]
     (as-> (calc-dp n goal-weight weights) result
-      (create-weight? result goal-weight)
+      (get-in result [n goal-weight])
       (if result "yes" "no")
       (println result))))
