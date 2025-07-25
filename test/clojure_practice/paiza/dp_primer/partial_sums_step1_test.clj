@@ -4,7 +4,6 @@
    [clojure.test :refer [deftest is]]))
 
 (deftest partial-sums-step1-test
-  ;; 現在のテストケース（偶然通っている）
   (with-in-str "3 10\n1\n2\n3\n"
     (let [actual (with-out-str (main))
           expected "0\n"]
