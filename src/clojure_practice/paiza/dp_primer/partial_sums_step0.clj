@@ -4,11 +4,12 @@
 
 ;; dp[i][w] の i と w の 値を算出する
 (defn- calc-dp-value-at [dp i w current-w]
-  (let [prev-dp (nth dp (dec i))]
-    (if (and (<= current-w w)
-             (nth prev-dp (- w current-w)))
-      true
-      (nth prev-dp w))))
+  (let [prev-dp (nth dp (dec i))
+        diff-w (- w current-w)
+        create-with-current? (and (<= 0 diff-w)
+                                  (nth prev-dp diff-w))
+        create-without-current? (nth prev-dp w)]
+    (or create-with-current? create-without-current?)))
 
 ;; dp[i][w] = 「i番目までのおもりを使い、重さの和がwとなるようにすることができるかどうか」
 ;; 上記のdpを計算する。
