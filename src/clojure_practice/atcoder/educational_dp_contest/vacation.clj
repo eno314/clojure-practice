@@ -3,25 +3,19 @@
    [clojure-practice.paiza.libs :refer [read-int-value-line
                                         read-int-values-lines]]))
 
-(defn- max-happiness-dp-of-day [happiness-table dp day]
-  (let [[a b c] (nth happiness-table (dec day))
-        [a-last-dp b-last-dp c-last-dp] (last dp)]
-    [(+ a (max b-last-dp c-last-dp))
-     (+ b (max a-last-dp c-last-dp))
-     (+ c (max a-last-dp b-last-dp))]))
-
 (defn- calc-max-happiness [n happiness-table]
   (loop [day 1
-         dp [[0 0 0]]]
+         [a-max b-max c-max] [0 0 0]]
     (if (< n day)
-      dp
+      [a-max b-max c-max]
       (recur (inc day)
-             (conj dp
-                   (max-happiness-dp-of-day happiness-table dp day))))))
+             (let [[a b c] (nth happiness-table (dec day))]
+               [(max a-max (+ a b-max) (+ a c-max))
+                (max b-max (+ b a-max) (+ b c-max))
+                (max c-max (+ c a-max) (+ c b-max))])))))
 
-(defn- get-max-happiness-of-day [dp]
-  (let [[max-a max-b max-c] (last dp)]
-    (max max-a max-b max-c)))
+(defn- get-max-happiness-of-day [max-happiness]
+  (apply max max-happiness))
 
 (defn main
   "https://atcoder.jp/contests/dp/tasks/dp_c
