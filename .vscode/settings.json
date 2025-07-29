@@ -12,6 +12,7 @@
         "fibonaccis",
         "mapv",
         "paiza",
-        "println"
+        "println",
+        "subvec"
     ]
 }
