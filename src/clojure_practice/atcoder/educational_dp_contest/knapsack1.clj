@@ -3,25 +3,22 @@
    [clojure-practice.paiza.libs :refer [read-int-values-line
                                         read-int-values-lines]]))
 
-(defn- calc-max-values [prev-max-values limit-weight [weight value]]
+(defn- calc-max-values-at [prev-max-values limit-weight [weight value]]
   (mapv #(if (< % weight)
            (nth prev-max-values %)
            (max (nth prev-max-values %)
                 (+ (nth prev-max-values (- % weight)) value)))
         (range (inc limit-weight))))
 
-(defn- calc-max-value-dp [n limit-weight items]
+(defn- calc-max-values [n limit-weight items]
   (loop [idx 1
-         dp [(vec (repeat (inc limit-weight) 0))]]
+         max-values (vec (repeat (inc limit-weight) 0))]
     (if (< n idx)
-      dp
+      max-values
       (recur (inc idx)
-             (conj dp (calc-max-values (last dp)
-                                       limit-weight
-                                       (nth items (dec idx))))))))
-
-(defn- get-max-value [dp]
-  (last (last dp)))
+             (calc-max-values-at max-values
+                                 limit-weight
+                                 (nth items (dec idx)))))))
 
 (defn main
   "https://atcoder.jp/contests/dp/tasks/dp_d
@@ -47,6 +44,6 @@
   []
   (let [[n w] (read-int-values-line)
         items (read-int-values-lines n)]
-    (-> (calc-max-value-dp n w items)
-        (get-max-value)
+    (-> (calc-max-values n w items)
+        (last)
         (println))))
