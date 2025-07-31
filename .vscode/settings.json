@@ -5,12 +5,14 @@
     },
     "editor.formatOnSave": true,
     "cSpell.words": [
+        "atcoder",
         "defn",
         "disj",
         "doseq",
         "fibonaccis",
         "mapv",
         "paiza",
-        "println"
+        "println",
+        "subvec"
     ]
 }
