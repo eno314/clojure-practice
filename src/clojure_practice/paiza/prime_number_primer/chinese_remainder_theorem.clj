@@ -2,16 +2,19 @@
   (:require
    [clojure.string :as str]))
 
+(defn- find-candidates
+  [m b limit]
+  (loop [i b
+         candidates []]
+    (if (>= i limit)
+      candidates
+      (recur (+ i m) (conj candidates i)))))
+
 (defn- find-chinese-remainder-theorem
   [[m1 m2 b1 b2]]
-  (let [limit (* m1 m2)]
-    (loop [i 0
-           z-candidate []]
-      (cond
-        (= i limit) z-candidate
-        (not= b1 (mod i m1)) (recur (inc i) z-candidate)
-        (not= b2 (mod i m2)) (recur (inc i) z-candidate)
-        :else (recur (inc i) (conj z-candidate i))))))
+  (let [limit (* m1 m2)
+        candidates (find-candidates m1 b1 limit)]
+    (filter #(= b2 (mod % m2)) candidates)))
 
 (defn- get-result
   [result]
