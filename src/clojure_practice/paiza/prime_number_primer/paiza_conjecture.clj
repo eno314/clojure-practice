@@ -51,6 +51,5 @@
   []
   (->> (eratosthenes-sieve-bitset square-number-limit)
        (find-square-numbers-has-prime-pair)
-       ;(create-output-string)
-       (count)
+       (create-output-string)
        (println)))

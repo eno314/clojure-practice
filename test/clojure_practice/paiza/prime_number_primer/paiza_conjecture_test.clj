@@ -6,6 +6,6 @@
 (deftest paiza-conjecture
   (testing "sample"
     (let [actual (with-out-str (main))
-          expected "3847\n"]
-      (is (= expected actual)))))
+          expected-str-length 33017]
+      (is (= expected-str-length (count actual))))))
 

@@ -1,6 +1,6 @@
 (ns clojure-practice.paiza.prime-number-primer.is-prime)
 
-(defn- primer?
+(defn- prime?
   [n]
   (cond
     (<= n 1) false
@@ -29,7 +29,7 @@
           (recur (inc i) sieve)
           (recur (inc i) (update-sieve sieve i)))))))
 
-(defn- primer?-by-fermat
+(defn- prime?-by-fermat
   [n]
   (cond
     (<= n 1) false
@@ -46,6 +46,6 @@
 (defn main
   []
   (->> (Long/parseLong (read-line))
-       (primer?)
+       (prime?)
        (boolean-to-string)
        (println)))

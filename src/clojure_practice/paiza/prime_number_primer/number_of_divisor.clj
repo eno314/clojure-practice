@@ -27,8 +27,8 @@
 
 (defn- calc-number-of-divisors
   [factor-dict]
-  (reduce (fn [acc [_ count_of_factor]]
-            (* acc (inc count_of_factor)))
+  (reduce (fn [acc [_ count-of-factor]]
+            (* acc (inc count-of-factor)))
           1
           factor-dict))
 
