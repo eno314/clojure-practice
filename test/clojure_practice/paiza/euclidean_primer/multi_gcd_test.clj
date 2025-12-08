@@ -3,7 +3,7 @@
    [clojure-practice.paiza.euclidean-primer.multi-gcd :refer [main]]
    [clojure.test :refer [deftest is testing]]))
 
-(deftest chinese-remainder-theorem
+(deftest multi-gcd
   (testing "sample1"
     (with-in-str "3\n6\n18\n30"
       (let [actual (with-out-str (main))

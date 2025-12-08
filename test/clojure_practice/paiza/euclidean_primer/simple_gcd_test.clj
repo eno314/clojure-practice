@@ -3,7 +3,7 @@
    [clojure-practice.paiza.euclidean-primer.simple-gcd :refer [main]]
    [clojure.test :refer [deftest is testing]]))
 
-(deftest chinese-remainder-theorem
+(deftest simple-gcd
   (testing "sample1"
     (with-in-str "45 15"
       (let [actual (with-out-str (main))
