@@ -1,0 +1,33 @@
+{:min-bb-version "1.0.0"
+ :paths ["src" "test"]
+ :deps {org.clojure/tools.namespace {:mvn/version "1.5.0"}}
+ :tasks
+ {:requires ([clojure.test :as t]
+             [clojure.tools.namespace.repl :as repl])
+  
+  test
+  {:doc "Run tests"
+   :task (do
+           (require 'clojure.test)
+           (let [summary (clojure.test/run-all-tests #"clojure-practice\..*-test")]
+             (when (or (pos? (:fail summary)) (pos? (:error summary)))
+               (System/exit 1))))}
+  
+  repl
+  {:doc "Start REPL with namespace tools"
+   :task (do
+           (require '[clojure.tools.namespace.repl :as repl])
+           (clojure.main/repl
+            :init (fn []
+                    (require 'clojure-practice.core)
+                    (in-ns 'clojure-practice.core))))}
+  
+  run
+  {:doc "Run the main namespace"
+   :task (do
+           (require 'clojure-practice.core)
+           ((resolve 'clojure-practice.core/-main)))}
+  
+  -main
+  {:doc "Run the main namespace (alias)"
+   :task (run-task 'run)}}}

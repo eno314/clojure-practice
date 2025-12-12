@@ -2,6 +2,46 @@
 
 This repository is to pracetice Clojure.
 
+## Setup
+
+This project uses [Babashka](https://babashka.org/), a fast native Clojure scripting runtime.
+
+### Installation
+
+Install Babashka:
+- macOS: `brew install borkdude/brew/babashka`
+- Linux: See [installation guide](https://github.com/babashka/babashka#installation)
+- Windows: Use scoop or download binaries
+
+## Usage
+
+### Running Tests
+
+```bash
+bb test
+```
+
+### Starting a REPL
+
+```bash
+bb repl
+```
+
+### Running the Main Namespace
+
+```bash
+bb run
+```
+
+### Using Leiningen (Legacy)
+
+The project still includes `project.clj` for compatibility with Leiningen:
+
+```bash
+lein test
+lein repl
+```
+
 ## License
 
 Copyright © 2023 eno314
