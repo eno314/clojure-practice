@@ -12,7 +12,7 @@
            (let [summary (clojure.test/run-all-tests (re-pattern "clojure-practice\\..*-test"))]
              (when (or (pos? (:fail summary)) (pos? (:error summary)))
                (System/exit 1))))}
-  
+
   bb-repl
   {:doc "Start REPL with namespace tools"
    :override-builtin true
@@ -20,14 +20,14 @@
            (require 'clojure-practice.core)
            (in-ns 'clojure-practice.core)
            (clojure.main/repl))}
-  
+
   bb-run
   {:doc "Run the main namespace"
    :override-builtin true
    :task (do
            (require 'clojure-practice.core)
            (clojure-practice.core/-main))}
-  
+
   -main
   {:doc "Run the main namespace (alias)"
    :task (run-task 'bb-run)}}}
