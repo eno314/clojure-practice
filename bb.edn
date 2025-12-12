@@ -2,32 +2,32 @@
  :paths ["src" "test"]
  :deps {org.clojure/tools.namespace {:mvn/version "1.5.0"}}
  :tasks
- {:requires ([clojure.test :as t]
-             [clojure.tools.namespace.repl :as repl])
-  
-  test
+ {test
   {:doc "Run tests"
    :task (do
-           (require 'clojure.test)
-           (let [summary (clojure.test/run-all-tests #"clojure-practice\..*-test")]
+           (require 'clojure-practice.core-test)
+           (try (require 'clojure-practice.number-place.resolver-test) (catch Exception _))
+           (try (require 'clojure-practice.paiza.board-test) (catch Exception _))
+           (try (require 'clojure-practice.paiza.libs-test) (catch Exception _))
+           (let [summary (clojure.test/run-all-tests (re-pattern "clojure-practice\\..*-test"))]
              (when (or (pos? (:fail summary)) (pos? (:error summary)))
                (System/exit 1))))}
   
-  repl
+  bb-repl
   {:doc "Start REPL with namespace tools"
-   :task (do
-           (require '[clojure.tools.namespace.repl :as repl])
-           (clojure.main/repl
-            :init (fn []
-                    (require 'clojure-practice.core)
-                    (in-ns 'clojure-practice.core))))}
-  
-  run
-  {:doc "Run the main namespace"
+   :override-builtin true
    :task (do
            (require 'clojure-practice.core)
-           ((resolve 'clojure-practice.core/-main)))}
+           (in-ns 'clojure-practice.core)
+           (clojure.main/repl))}
+  
+  bb-run
+  {:doc "Run the main namespace"
+   :override-builtin true
+   :task (do
+           (require 'clojure-practice.core)
+           (clojure-practice.core/-main))}
   
   -main
   {:doc "Run the main namespace (alias)"
-   :task (run-task 'run)}}}
+   :task (run-task 'bb-run)}}}
