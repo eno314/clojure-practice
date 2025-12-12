@@ -12,5 +12,5 @@
   (testing "sample2"
     (with-in-str "2464 2461"
       (let [actual (with-out-str (main))
-            expected "6054704\n"]
+            expected "6063904\n"]
         (is (= expected actual))))))
