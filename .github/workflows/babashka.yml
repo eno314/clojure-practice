@@ -13,13 +13,12 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Setup Babashka
-              uses: turtlequeue/setup-babashka@v1.7.0
-              with:
-                  babashka-version: 1.12.213
-
-            - name: Verify Babashka installation
-              run: bb --version
+            - name: Install Babashka
+              run: |
+                  curl -sLO https://raw.githubusercontent.com/babashka/babashka/master/install
+                  chmod +x install
+                  sudo ./install
+                  bb --version
 
             - name: Run tests
               run: bb test
