@@ -1,6 +1,6 @@
 # clojure-practice
 
-This repository is to pracetice Clojure.
+This repository is to practice Clojure.
 
 ## Setup
 
