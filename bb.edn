@@ -4,14 +4,26 @@
  :tasks
  {test
   {:doc "Run tests"
-   :task (do
-           (require 'clojure-practice.core-test)
-           (try (require 'clojure-practice.number-place.resolver-test) (catch Exception _))
-           (try (require 'clojure-practice.paiza.board-test) (catch Exception _))
-           (try (require 'clojure-practice.paiza.libs-test) (catch Exception _))
+   :task (let [test-files (filter (fn [f] 
+                                    (and (.isFile f)
+                                         (.endsWith (.getName f) "_test.clj")))
+                                  (file-seq (clojure.java.io/file "test")))
+               test-namespaces (map (fn [f]
+                                      (-> (.getPath f)
+                                          (clojure.string/replace (re-pattern "^test/") "")
+                                          (clojure.string/replace (re-pattern "\\.clj$") "")
+                                          (clojure.string/replace (re-pattern "/") ".")
+                                          (clojure.string/replace (re-pattern "_") "-")
+                                          symbol))
+                                    test-files)]
+           (doseq [ns test-namespaces]
+             (try 
+               (require ns)
+               (catch Exception e 
+                 (println (str "Warning: Could not load " ns ": " (.getMessage e))))))
            (let [summary (clojure.test/run-all-tests (re-pattern "clojure-practice\\..*-test"))]
              (when (or (pos? (:fail summary)) (pos? (:error summary)))
-               (System/exit 1))))}
+               (System/exit 1))))}}
 
   bb-repl
   {:doc "Start REPL with namespace tools"
