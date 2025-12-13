@@ -4,7 +4,7 @@
  :tasks
  {test
   {:doc "Run tests"
-   :task (let [test-files (filter (fn [f] 
+   :task (let [test-files (filter (fn [f]
                                     (and (.isFile f)
                                          (.endsWith (.getName f) "_test.clj")))
                                   (file-seq (clojure.java.io/file "test")))
@@ -17,29 +17,29 @@
                                           symbol))
                                     test-files)]
            (doseq [ns test-namespaces]
-             (try 
+             (try
                (require ns)
-               (catch Exception e 
+               (catch Exception e
                  (println (str "Warning: Could not load " ns ": " (.getMessage e))))))
            (let [summary (clojure.test/run-all-tests (re-pattern "clojure-practice\\..*-test"))]
              (when (or (pos? (:fail summary)) (pos? (:error summary)))
                (System/exit 1))))}}
 
-  bb-repl
-  {:doc "Start REPL with namespace tools"
-   :override-builtin true
-   :task (do
-           (require 'clojure-practice.core)
-           (in-ns 'clojure-practice.core)
-           (clojure.main/repl))}
+ bb-repl
+ {:doc "Start REPL with namespace tools"
+  :override-builtin true
+  :task (do
+          (require 'clojure-practice.core)
+          (in-ns 'clojure-practice.core)
+          (clojure.main/repl))}
 
-  bb-run
-  {:doc "Run the main namespace"
-   :override-builtin true
-   :task (do
-           (require 'clojure-practice.core)
-           (clojure-practice.core/-main))}
+ bb-run
+ {:doc "Run the main namespace"
+  :override-builtin true
+  :task (do
+          (require 'clojure-practice.core)
+          (clojure-practice.core/-main))}
 
-  -main
-  {:doc "Run the main namespace (alias)"
-   :task (run-task 'bb-run)}}}
+ -main
+ {:doc "Run the main namespace (alias)"
+  :task (run-task 'bb-run)}}
