@@ -18,6 +18,8 @@
     []
     (filter #(not (or (= a %)
                       (zero? (mod n %))
+                      ;; ax + by = gcd(a, n).
+                      ;; So there is no solution when `n % gcd(a, b) != 0`
                       (zero? (mod n (gcd [a %])))))
             (range 1 1001))))
 
